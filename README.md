@@ -1,3 +1,6 @@
+## This project has been archived
+I haven't had the motivation to work on it for quite a while and I don't want to continue supporting this community, so I have decided to archive the project.
+
 # UI-Utils-Reborn
 Fabric mod for testing duplication exploits
 
