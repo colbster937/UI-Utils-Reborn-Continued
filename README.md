@@ -1,12 +1,9 @@
-## This project has been archived
-I haven't had the motivation to work on it for quite a while and I don't want to continue supporting this community, so I have decided to archive the project.
-
 # UI-Utils-Reborn
 Fabric mod for testing duplication exploits
 
 ## Contact
 If you encounter any issues, please report them on the
-[issue tracker](https://github.com/FlorianMichael/UI-Utils-Reborn/issues).  
+[issue tracker](https://github.com/colbster937/UI-Utils-Reborn-Continued/issues).  
 If you just want to talk or need help with UI-Utils-Reborn feel free to join my
 [Discord](https://discord.gg/BwWhCHUKDf).
 

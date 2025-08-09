@@ -26,12 +26,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import io.netty.channel.ChannelFutureListener;
 
 @Mixin(ClientConnection.class)
 public abstract class MixinClientConnection {
 
     @Inject(method = "sendInternal", at = @At("HEAD"), cancellable = true)
-    private void hookExploitCancels(Packet<?> packet, PacketCallbacks callbacks, boolean flush, CallbackInfo ci) {
+    private void hookExploitCancels(Packet<?> packet, ChannelFutureListener listener, boolean someFlag, CallbackInfo ci) {
         if (UIUtilsReborn.shouldCancel(packet)) ci.cancel();
     }
 

@@ -19,6 +19,7 @@
 package de.florianmichael.uiutilsreborn.gui;
 
 import de.florianmichael.uiutilsreborn.UIUtilsReborn;
+import de.florianmichael.uiutilsreborn.gui.FabricateScreen.CurrentPacket;
 import de.florianmichael.uiutilsreborn.util.ITextFieldAdapter;
 import de.florianmichael.uiutilsreborn.widget.DropboxWidget;
 import de.florianmichael.uiutilsreborn.widget.ExploitButtonWidget;
@@ -28,12 +29,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.ItemStack;
+import net.minecraft.screen.sync.ItemStackHash;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
@@ -96,15 +98,15 @@ public class FabricateScreen extends Screen {
 
                 final Integer syncID = this.isInt(this.syncID.getText().trim());
                 final Integer revision = this.isInt(this.revision.getText().trim());
-                final Integer slot = this.isInt(this.slot.getText().trim());
-                final Integer button = this.isInt(this.button.getText().trim());
+                final Short slot = this.isShort(this.slot.getText().trim());
+                final Byte button = this.isByte(this.button.getText().trim());
 
                 if (syncID == null || revision == null || slot == null || button == null) {
                     this.status = Formatting.RED + Text.translatable("fabricate.ui-utils-reborn.invalid").getString();
                     return;
                 }
 
-                client.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(syncID, revision, slot, button, SlotActionType.values()[this.action.selected], ItemStack.EMPTY, new Int2ObjectArrayMap<>()));
+                client.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(syncID, revision, slot, button, SlotActionType.values()[this.action.selected], new Int2ObjectArrayMap<>(), ItemStackHash.EMPTY));
             } else {
                 if (this.syncID.getText().trim().isEmpty() || this.buttonID.getText().trim().isEmpty()) {
                     this.status = Formatting.RED + Text.translatable("fabricate.ui-utils-reborn.invalid").getString();
@@ -128,6 +130,22 @@ public class FabricateScreen extends Screen {
     private Integer isInt(final String input) {
         try {
             return Integer.parseInt(input);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Short isShort(final String input) {
+        try {
+            return Short.parseShort(input);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Byte isByte(final String input) {
+        try {
+            return Byte.parseByte(input);
         } catch (Exception e) {
             return null;
         }
@@ -195,26 +213,26 @@ public class FabricateScreen extends Screen {
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         final var matrices = drawContext.getMatrices();
 
-        matrices.push();
-        matrices.translate(0, 0, -100);
+        matrices.pushMatrix();
+        matrices.translate(0, 0);
         this.parent.render(drawContext, -1, -1, delta);
-        matrices.pop();
+        matrices.popMatrix();
 
-        matrices.push();
-        matrices.translate(0, 0, 900);
+        matrices.pushMatrix();
+        matrices.translate(0, 0);
         super.render(drawContext, mouseX, mouseY, delta);
 
-        matrices.push();
-        matrices.scale(2F, 2F, 2F);
+        matrices.pushMatrix();
+        matrices.scale(2F, 2F);
         drawContext.drawCenteredTextWithShadow(textRenderer, Text.literal(this.currentPacket.getDisplay()).asOrderedText(), this.width / 4, 2, -1);
-        matrices.pop();
+        matrices.popMatrix();
 
         if (this.action != null)
             this.action.render(drawContext);
 
         if (this.status != null)
             drawContext.drawTextWithShadow(textRenderer, this.status, 0, 0, -1);
-        matrices.pop();
+        matrices.popMatrix();
     }
 
     public enum CurrentPacket {

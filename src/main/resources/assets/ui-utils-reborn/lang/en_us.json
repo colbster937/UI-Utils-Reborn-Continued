@@ -1,5 +1,5 @@
 {
-  "gui.ui-utils-reborn.client-side-close": "Close without Packet",
+  "gui.ui-utils-reborn.client-side-close": "Ghost Close",
   "gui.ui-utils-reborn.client-wake-up": "Client wakeup",
   "gui.ui-utils-reborn.server-side-close": "Desync",
   "gui.ui-utils-reborn.force-respawn": "Force Respawn",
@@ -8,12 +8,15 @@
   "gui.ui-utils-reborn.delay-packets": "Delay Packets",
   "gui.ui-utils-reborn.save": "Save GUI",
   "gui.ui-utils-reborn.load": "Load saved GUI",
-  "gui.ui-utils-reborn.disconnect": "Send and quit",
+  "gui.ui-utils-reborn.disconnect": "Send and Quit",
 
-  "gui.ui-utils-reborn.copy": "Copy Window data",
+  "gui.ui-utils-reborn.copy": "Copy Window Data",
   "gui.ui-utils-reborn.fabricate": "Fabricate Packet",
 
   "fabricate.ui-utils-reborn.send": "Send Packet",
   "fabricate.ui-utils-reborn.invalid": "Invalid parameters!",
-  "fabricate.ui-utils-reborn.success": "Sent successfully!"
+  "fabricate.ui-utils-reborn.success": "Sent successfully!",
+
+  "gui.ui-utils-reborn.info1": "Sync Id: ",
+  "gui.ui-utils-reborn.info2": "Revision: "
 }

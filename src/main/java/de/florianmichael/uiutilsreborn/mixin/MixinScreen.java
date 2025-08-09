@@ -22,14 +22,21 @@ import de.florianmichael.uiutilsreborn.UIUtilsReborn;
 import de.florianmichael.uiutilsreborn.widget.ExploitButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.joml.Matrix4f;
+import java.awt.Color;
 
 import java.util.List;
 
@@ -41,6 +48,10 @@ public abstract class MixinScreen {
     @Shadow public int width;
 
     @Shadow public abstract List<? extends Element> children();
+
+    @Shadow protected MinecraftClient client;
+
+    @Shadow protected TextRenderer textRenderer;
 
     @Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At("RETURN"))
     private void hookFeatureButtons(MinecraftClient client, int width, int height, CallbackInfo ci) {
@@ -58,6 +69,21 @@ public abstract class MixinScreen {
             this.addDrawableChild(next);
             buttonHeight += UIUtilsReborn.BUTTON_DIFF;
         }
+    }
+
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void drawInfo(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!UIUtilsReborn.isEnabled() || this.client.player == null || UIUtilsReborn.fromScreen((Screen) (Object) this).isEmpty()) return;
+
+        int x = this.client.getWindow().getScaledWidth() - 5;
+        int y = this.client.getWindow().getScaledHeight() - textRenderer.fontHeight - 5;
+
+        String info1 = Text.translatable("gui.ui-utils-reborn.info1").getString() + client.player.currentScreenHandler.syncId;
+        String info2 = Text.translatable("gui.ui-utils-reborn.info2").getString() + client.player.currentScreenHandler.getRevision();
+
+        context.drawText(textRenderer, info1, x - textRenderer.getWidth(info1), y - 10, Color.WHITE.getRGB(), false);
+        context.drawText(textRenderer, info2, x - textRenderer.getWidth(info2), y, Color.WHITE.getRGB(), false);
     }
 
     @Inject(method = "tick", at = @At("RETURN"))

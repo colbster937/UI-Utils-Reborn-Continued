@@ -22,6 +22,8 @@ import de.florianmichael.uiutilsreborn.gui.FabricateScreen;
 import de.florianmichael.uiutilsreborn.widget.ExploitButtonWidget;
 import de.florianmichael.uiutilsreborn.widget.ToggleableExploitButtonWidget;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -59,15 +61,17 @@ public class UIUtilsReborn implements ClientModInitializer {
         return enabled;
     }
 
-    public static boolean handleChatMessages(final String chatText) {
-        if (chatText.equals("$ui-utils-reborn")) {
-            UIUtilsReborn.enabled = !UIUtilsReborn.enabled;
-
-            assert MinecraftClient.getInstance().player != null;
-            MinecraftClient.getInstance().player.sendMessage(Text.of((UIUtilsReborn.enabled ? Formatting.GREEN : Formatting.RED) + "UI-Utils-Reborn is now " + (UIUtilsReborn.enabled ? "enabled" : "disabled")));
-            return true;
+    private static int toggleMod() {
+        enabled = !enabled;
+        var mc = MinecraftClient.getInstance();
+        if (mc.player != null) {
+            mc.player.sendMessage(
+                Text.of((enabled ? Formatting.GREEN : Formatting.RED) +
+                    "UI-Utils-Reborn is now " + (enabled ? "enabled" : "disabled")),
+                false
+            );
         }
-        return false;
+        return enabled ? 1 : 0;
     }
 
     @Override
@@ -150,7 +154,11 @@ public class UIUtilsReborn implements ClientModInitializer {
         exploits.add(new ExploitButtonWidget(Text.translatable("gui.ui-utils-reborn.copy"), b -> {
             assert mc.player != null;
 
-            mc.keyboard.setClipboard("SyncID: " + mc.player.currentScreenHandler.syncId + ", Revision: " + mc.player.currentScreenHandler.getRevision() + ", Title: " + Text.Serialization.toJsonString(mc.currentScreen.getTitle()));
+            mc.keyboard.setClipboard(
+                "SyncID: " + mc.player.currentScreenHandler.syncId +
+                ", Revision: " + mc.player.currentScreenHandler.getRevision() +
+                ", Title: " + mc.currentScreen.getTitle().getString()
+            );
         }));
 
         // Packet Fabrication
@@ -160,7 +168,11 @@ public class UIUtilsReborn implements ClientModInitializer {
                 HandledScreen.class,
                 LecternScreen.class
         ))
-            hookFeature(aClass, exploits);
+        hookFeature(aClass, exploits);
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(literal("uiutils").executes(ctx -> toggleMod()));
+        });
     }
 
     public static boolean shouldCancel(final Packet<?> packet) {

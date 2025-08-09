@@ -4,7 +4,6 @@
   "package": "de.florianmichael.uiutilsreborn.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
-    "MixinChatScreen",
     "MixinClientConnection",
     "MixinScreen",
     "MixinTextFieldWidget"
