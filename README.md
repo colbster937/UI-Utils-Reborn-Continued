@@ -17,7 +17,7 @@ Differences between the original and this one:
 - Removed Restore Key and added new Button
 
 ## Tutorial
-You can type `$ui-utils-reborn` into the chat to disable/enable the GUI stuff
+You can run the command `/uiutils` to disable/enable the GUI stuff
 
 ### Buttons:
 - **Close without Packet** Closes your current Screen without sending a `CloseHandledScreenC2SPacket` to the server
