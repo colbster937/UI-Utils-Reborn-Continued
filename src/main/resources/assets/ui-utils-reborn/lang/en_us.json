@@ -9,6 +9,7 @@
   "gui.ui-utils-reborn.save": "Save GUI",
   "gui.ui-utils-reborn.load": "Load saved GUI",
   "gui.ui-utils-reborn.disconnect": "Send and Quit",
+  "gui.ui-utils-reborn.sendChat": "Send Chat...",
 
   "gui.ui-utils-reborn.copy": "Copy Window Data",
   "gui.ui-utils-reborn.fabricate": "Fabricate Packet",

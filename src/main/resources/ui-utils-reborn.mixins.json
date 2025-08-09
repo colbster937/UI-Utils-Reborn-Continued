@@ -2,11 +2,14 @@
   "required": true,
   "minVersion": "0.8",
   "package": "de.florianmichael.uiutilsreborn.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_21",
   "client": [
     "MixinClientConnection",
     "MixinScreen",
-    "MixinTextFieldWidget"
+    "MixinTextFieldWidget",
+    "MixinKeyboardStopInvKey",
+    "MixinCreativeInventoryScreenKeys",
+    "MixinMouseUnfocus"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -20,22 +20,24 @@ package de.florianmichael.uiutilsreborn.mixin;
 
 import de.florianmichael.uiutilsreborn.UIUtilsReborn;
 import de.florianmichael.uiutilsreborn.widget.ExploitButtonWidget;
+import de.florianmichael.uiutilsreborn.widget.ExploitSquareButtonWidget;
+import de.florianmichael.uiutilsreborn.widget.ExploitTextFieldWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.awt.Color;
 
 import java.util.List;
@@ -48,6 +50,10 @@ public abstract class MixinScreen {
     @Shadow public int width;
 
     @Shadow public abstract List<? extends Element> children();
+
+    @Unique private ExploitTextFieldWidget chatBox;
+    
+    @Unique private ButtonWidget chatSendButton;
 
     @Shadow protected MinecraftClient client;
 
@@ -69,6 +75,32 @@ public abstract class MixinScreen {
             this.addDrawableChild(next);
             buttonHeight += UIUtilsReborn.BUTTON_DIFF;
         }
+        
+        int w = buttons.get(0).getWidth();
+        int y = UIUtilsReborn.BOUND + buttonHeight;
+
+        int square = ExploitTextFieldWidget.DEFAULT_HEIGHT;
+        int gap = 2;
+
+        int sendX = this.width - UIUtilsReborn.BOUND - square;
+        int boxW = w - square - gap;
+        int boxX = sendX - gap - boxW;
+
+        this.chatBox = new ExploitTextFieldWidget()
+                .withPlaceholder(Text.translatable("gui.ui-utils-reborn.sendChat"))
+                .setPos(boxX, y)
+                .setSize(boxW, ExploitTextFieldWidget.DEFAULT_HEIGHT);
+
+        chatBox.setEditable(true);
+        chatBox.setFocusUnlocked(true);
+
+        this.addDrawableChild(this.chatBox);
+
+        this.chatSendButton = new ExploitSquareButtonWidget(
+                sendX, y, square, Text.literal("→"),
+                btn -> sendChatFromBox()
+        );
+        this.addDrawableChild(this.chatSendButton);
     }
 
 
@@ -84,6 +116,33 @@ public abstract class MixinScreen {
 
         context.drawText(textRenderer, info1, x - textRenderer.getWidth(info1), y - 10, Color.WHITE.getRGB(), false);
         context.drawText(textRenderer, info2, x - textRenderer.getWidth(info2), y, Color.WHITE.getRGB(), false);
+    }
+
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    private void keyPressedInject(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (chatBox != null && chatBox.isFocused()) {
+            if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) {
+                sendChatFromBox();
+                cir.setReturnValue(true);
+            }
+        }
+    }
+
+    @Unique
+    private void sendChatFromBox() {
+        var mc = MinecraftClient.getInstance();
+        if (mc.player == null) return;
+
+        String s = chatBox.getText().trim();
+        if (s.isEmpty()) return;
+
+        if (s.startsWith("/")) {
+            mc.player.networkHandler.sendChatCommand(s.substring(1));
+        } else {
+            mc.player.networkHandler.sendChatMessage(s);
+        }
+
+        chatBox.setText("");
     }
 
     @Inject(method = "tick", at = @At("RETURN"))

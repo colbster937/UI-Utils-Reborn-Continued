@@ -20,7 +20,6 @@ package de.florianmichael.uiutilsreborn.mixin;
 
 import de.florianmichael.uiutilsreborn.UIUtilsReborn;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.Packet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

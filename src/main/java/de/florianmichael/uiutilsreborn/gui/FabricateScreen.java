@@ -19,7 +19,6 @@
 package de.florianmichael.uiutilsreborn.gui;
 
 import de.florianmichael.uiutilsreborn.UIUtilsReborn;
-import de.florianmichael.uiutilsreborn.gui.FabricateScreen.CurrentPacket;
 import de.florianmichael.uiutilsreborn.util.ITextFieldAdapter;
 import de.florianmichael.uiutilsreborn.widget.DropboxWidget;
 import de.florianmichael.uiutilsreborn.widget.ExploitButtonWidget;
@@ -35,7 +34,6 @@ import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
@@ -231,7 +229,7 @@ public class FabricateScreen extends Screen {
             this.action.render(drawContext);
 
         if (this.status != null)
-            drawContext.drawTextWithShadow(textRenderer, this.status, 0, 0, -1);
+            drawContext.drawTextWithShadow(textRenderer, this.status, 5, 5, -1);
         matrices.popMatrix();
     }
 
